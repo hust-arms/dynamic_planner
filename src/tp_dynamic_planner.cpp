@@ -13,6 +13,13 @@
 
 namespace dynamic_planner{
 
+TPDynamicPlanner::TPDynamicPlanner(){
+	detect_ang_l_ = 45; // degree
+	detect_ang_r_ = 45;
+	obs_detect_dist_ = 5; // meter
+	ship_width_ = 0.5; // meter
+}
+
 bool TPDynamicPlanner::isStopAvoidance(pos_x, pos_y, pos_th){
 	return isFrontPathFree(pos_x, pos_y, pos_th);
 }

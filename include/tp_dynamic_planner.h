@@ -35,8 +35,15 @@ enum class AvoidOrientation{
  */
 class TPDynamicPlanner : public BaseDynamicPlanner{
 public:
-	DynamicPlanner(){};
-	~DynamicPlanner(){};
+	TPDynamicPlanner();
+
+	TPDynamicPlanner(double left_detect_angle, 
+		double right_detect_angle, double obs_detect_dist, 
+		double ship_width) : detect_ang_l_(left_detect_angle), 
+	detect_ang_r_(right_detect_angle),
+	obs_detect_d_(obs_detect_dist), ship_width_(ship_width){};
+
+	~TPDynamicPlanner(){};
 
         /**
          * @brief Determine whether the usv should stop avoiding.
@@ -116,6 +123,8 @@ private:
 	AvoidOrientation last_choice_; // record last choice of avoidance
 
 	size_t avoid_count_; // record number of avoiding
+
+        double ship_width_; // width of ship
 
 	boost::shared_mutex obs_buffer_rw_mutex_; // mutex for write and read of obstacle buffer
 	std::vector<std::pair<double, double>> obs_buffer_; // position buffer of obstacle
