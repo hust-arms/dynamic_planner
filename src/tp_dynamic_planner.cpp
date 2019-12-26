@@ -241,17 +241,20 @@ double TPDynamicPlanner::lineCost(double pos_x, double pos_y, double detect_x, d
 		for(int check_ind = 0; check_ind < collision_check_buffer.size(); ++check_ind){
 			std::vector<double> obs_dist_buffer;
 			// Traverse all obstacle points in obstacle buffer
-			for(int obs_ind = 0; obs_ind < obs_buffer_.size(); ++obs_ind){
-				double obs_dist_del_x = obs_buffer_[obs_ind].first - collision_check_buffer[check_ind].first;
-				double obs_dist_del_y = obs_buffer_[obs_ind].second - collision_check_buffer[check_ind].second;
-				double obs_dist = std::sqrt(obs_dist_del_x * obs_dist_del_x + obs_dist_del_y * obs_dist_del_y);
-				if(obs_dist <= std::max(delt_dist, std::sqrt(2) * ship_width_)){
-					return -1;
+			{
+				ReadLock read_lock(obs_buffer_rw_mutex_);
+				for(int obs_ind = 0; obs_ind < obs_buffer_.size(); ++obs_ind){
+					double obs_dist_del_x = obs_buffer_[obs_ind].first - collision_check_buffer[check_ind].first;
+					double obs_dist_del_y = obs_buffer_[obs_ind].second - collision_check_buffer[check_ind].second;
+					double obs_dist = std::sqrt(obs_dist_del_x * obs_dist_del_x + obs_dist_del_y * obs_dist_del_y);
+					if(obs_dist <= std::max(delt_dist, std::sqrt(2) * ship_width_)){
+						return -1;
+					}
+					else{
+						obs_dist_buffer.push_back(obs_dist);
+					}
 				}
-				else{
-					obs_dist_buffer.push_back(obs_dist);
-				}
-			}
+			}// end of read lock
 			std::sort(obs_dist_buffer.begin(), obs_dist_buffer.end());
 			if(obs_dist_buffer.size()){
 				// Calculate the average value for each collision checking point
