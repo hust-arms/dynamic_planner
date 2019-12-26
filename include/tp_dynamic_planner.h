@@ -9,18 +9,20 @@
   *****************************************************************************
 **/
 
-#ifndef DYNAMIC_PLANNER_H_
-#define DYNAMIC_PLANNER_H_
+#ifndef TP_DYNAMIC_PLANNER_H_
+#define TP_DYNAMIC_PLANNER_H_
 
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <cmath>
 
 #include "base_dynamic_planner.h"
 
 namespace dynamic_planner{
+
 typedef boost::unique_lock<boost::shared_mutex> WriteLock;
 typedef boost::shared_lock<boost::shared_mutex> ReadLock; 
 
@@ -57,7 +59,7 @@ public:
          * @param pos_th Orienataion of usv
          * @return Return true if avoidance canbe stopped. Otherwise, return false.
          */
-        bool isStopAvoidance(pos_x, pos_y, pos_th)override;
+        bool isStopAvoidance(double pos_x, double pos_y, double pos_th)override;
 
 
 	/**
@@ -80,7 +82,7 @@ public:
          * @param avoid_goal_y Y coordinate of temperature goal point for usv in state of avoiding
          * @return If get a temp goal point successfully, return true. Otherwise, return false
          */
-        bool getAvoidGoal(double pos_x, double pos_y, double pos_th, double& avoid_goal_x, double& avoid_goal_y)override;
+        bool getAvoidGoal(double pos_x, double pos_y, double pos_th, double& avoid_goal_x, double& avoid_goal_y);
 
 	/**
 	 * @brief Update obstacle buffer.
@@ -99,6 +101,23 @@ private:
 	 * @param right_line_cost Line cost of right way to output
 	 */
 	void ouputLineCostOfTP(double pos_x, double pos_y, double pos_th, double& mid_line_cost, double& left_line_cost, double& right_line_cost);
+
+	/**
+	 * @brief Get terminal point of obstacle detection area
+	 * @param pos_x X coordinate of usv
+	 * @param pos_y Y coordinate of usv
+	 * @param pos_th Orientation of usv
+	 * @param detect_x_m X coordinate of mid way detecting terminal point
+	 * @param detect_y_m Y coordinate of mid way detecting terminal point
+	 * @param detect_x_l X coordinate of left way detecting terminal point
+	 * @param detect_y_l Y coordinate of left way detecting terminal point
+	 * @param detect_x_r X coordinate of right way detecting terminal point
+	 * @param detect_y_r Y coordinate of right way detecting terminal point
+	 */
+	void getObsDetectionArea(double pos_x, double pos_y, double pos_th, 
+			double& detect_x_m, double& detect_y_m, 
+			double& detect_x_l, double& detect_y_l, 
+			double& detect_x_r, double& detect_y_r);
 
 	/**
 	 * @brief Get cost of visual line.

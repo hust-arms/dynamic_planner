@@ -26,7 +26,7 @@ public:
 	 * @param pos_th Orienataion of usv
 	 * @return Return true if avoidance canbe stopped. Otherwise, return false.
 	 */
-	virtual bool isStopAvoidance(pos_x, pos_y, pos_th) = 0;
+	virtual bool isStopAvoidance(double pos_x, double pos_y, double pos_th) = 0;
 
 	/**
 	 * @brief Determine whether the following target is blocked.
@@ -55,7 +55,7 @@ public:
 	/**
 	 * @brief Virtual destructor 
 	 */
-	virtual ~BaseDynmaicPlanner(){};
+	virtual ~BaseDynamicPlanner(){};
 };
 }; // end of namespace
 
