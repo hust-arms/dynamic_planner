@@ -100,7 +100,7 @@ private:
 	 * @param left_line_cost Line cost of left way to output
 	 * @param right_line_cost Line cost of right way to output
 	 */
-	void ouputLineCostOfTP(double pos_x, double pos_y, double pos_th, double& mid_line_cost, double& left_line_cost, double& right_line_cost);
+	void outputLineCostOfTP(double pos_x, double pos_y, double pos_th, double& mid_line_cost, double& left_line_cost, double& right_line_cost);
 
 	/**
 	 * @brief Get terminal point of obstacle detection area

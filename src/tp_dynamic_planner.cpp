@@ -79,7 +79,7 @@ bool TPDynamicPlanner::getAvoidGoal(double pos_x, double pos_y, double pos_th, d
 		}
 		else if (left_line_cost == mid_line_cost){
 			if(avoid_count_){
-				if(last_choice == AvoidOrientation::LEFT){
+				if(last_choice_ == AvoidOrientation::LEFT){
 					double left_th = pos_th - detect_ang_l_ * PI / 180;
 					avoid_goal_x = detect_x_l;
 					avoid_goal_y = detect_y_l;
@@ -179,7 +179,7 @@ void TPDynamicPlanner::updateObsBuffer(std::vector<std::pair<double, double>>& n
 	} 	
 }
 
-void TPDynamicPlanner::ouputLineCostOfTP(double pos_x, double pos_y, double pos_th, double& mid_line_cost, double& left_line_cost, double& right_line_cost){
+void TPDynamicPlanner::outputLineCostOfTP(double pos_x, double pos_y, double pos_th, double& mid_line_cost, double& left_line_cost, double& right_line_cost){
 	// Calculate line cost of mid path
 	double detect_x_mid = pos_x + obs_detect_d_ * std::cos(pos_th);
 	double detect_y_mid = pos_y + obs_detect_d_ * std::sin(pos_th);
