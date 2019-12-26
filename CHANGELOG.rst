@@ -2,6 +2,10 @@
 Changelog for package move_base
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.0.0 (2019-12-26)
+------------------
+* Complete line cost calculation module
+
 1.0.0 (2019-12-25)
 -------------------
 * Complete definition of BaseDynamicPlanner class
