@@ -18,6 +18,7 @@ TPDynamicPlanner::TPDynamicPlanner(){
 	detect_ang_r_ = 45;
 	obs_detect_dist_ = 5; // meter
 	ship_width_ = 0.5; // meter
+	check_num_ = 10;
 }
 
 bool TPDynamicPlanner::isStopAvoidance(pos_x, pos_y, pos_th){
@@ -201,8 +202,62 @@ bool TPDynamicPlanner::isFrontPathFree(double pos_x, double pos_y, double pos_th
 	return (lineCost(pos_x, pos_y, detect_x_m, detect_y_m) >= 0);
 }
 
-bool TPDynamicPlanner::lineCost(double pos_x, double pos_y, double detect_x, double detect_y){
-	return true;
+double TPDynamicPlanner::lineCost(double pos_x, double pos_y, double detect_x, double detect_y){
+	// Get buffer for obstacle checking points
+	std::vector<std::pair<double, double>> collision_check_buffer;
+	double delt_x = (detect_x - pos_x) / check_num_; 
+	double delt_y = (detect_y - pos_y) / check_num_;
+	double delt_dist = std::sqrt(delt_x * delt_x + delt_y * delt_y);
+
+	for(int i = 0; i < check_num_ - 2; ++i){
+		collision_check_buffer.push(std::pair<double, double>(pos_x + (i + 1) * delt_x, pos_y + (i + 1) * delt_y));
+	}
+
+	double line_cost = 0;
+
+	// Check collision
+        std::vector<double> avr_obs_dist;
+	if(obs_buffer.size()){
+		for(int check_ind = 0; check_ind < collision_check_buffer.size(); ++check_ind){
+			std::vector<double> obs_dist_buffer;
+			// Traverse all obstacle points in obstacle buffer
+			for(int obs_ind = 0; obs_ind < obs_buffer_.size(); ++obs_ind){
+				double obs_dist_del_x = obs_buffer[obs_ind].first - collision_check_buffer[check_ind].first;
+				double obs_dist_del_y = obs_buffer[obs_ind].second - collision_check_buffer[check_ind].second;
+				double obs_dist = std::sqrt(obs_dist_del_x * obs_dist_del_x + obs_dist_del_y * obs_dist_del_y);
+				if(obs_dist <= std::max(delt_dist, std::sqrt(2) * ship_num)){
+					return -1;
+				}
+				else{
+					obs_dist_buffer.push_back(obs_dist);
+				}
+			}
+			std::sort(obs_dist_buffer.begin(), obs_dist_buffer.end());
+			if(obs_dist_bduffer.size()){
+				// Calculate the average value for each collision checking point
+				avr_obs_dist.push_back(std::accumulate(obs_dist_buffer.begin() + 1, obs_dist_buffer.end() - 1, 0) / (obs_dist_buffer.size() - 2));
+			}
+		}
+	}
+	else{
+		return 0;
+	}
+
+	// Calculate line cost
+	double avr_dist = std::accumulate(avr_obs_dist.begin(), avr_obs_dist.end(), 0);	
+	line_cost = avr_dist + varianceCalc(avr_obs_dist, avr_dist) / avr_obs_dist.size();
+
+	return line_cost;
 }
+
+double TPDynamicPlanner::varianceCalc(std::vector<double>& data_src, double avr){
+		double variance = 0;
+		// Caculate variance
+		std::for_each(data_src.begin(), data_src.end(), [avr, &variance](double data){
+			variance += std::pow((data - avr), 2);
+		});
+
+		return variance;
+	}
 
 };

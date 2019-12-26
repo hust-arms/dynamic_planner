@@ -13,8 +13,12 @@
 #define DYNAMIC_PLANNER_H_
 
 #include <vector>
+#include <algorithm>
+#include <numeric>
 #include <boost/thread/mutex.hpp>
-#include "BaseDynamicPlanner"
+#include <cmath>
+
+#include "base_dynamic_planner.h"
 
 namespace dynamic_planner{
 typedef boost::unique_lock<boost::shared_mutex> WriteLock;
@@ -41,7 +45,8 @@ public:
 		double right_detect_angle, double obs_detect_dist, 
 		double ship_width) : detect_ang_l_(left_detect_angle), 
 	detect_ang_r_(right_detect_angle),
-	obs_detect_d_(obs_detect_dist), ship_width_(ship_width){};
+	obs_detect_d_(obs_detect_dist), ship_width_(ship_width),
+	check_num_(10){};
 
 	~TPDynamicPlanner(){};
 
@@ -114,6 +119,12 @@ private:
 	 */
 	double lineCost(double pos_x, double pos_y, double detect_x, double detect_y);
 
+	/**
+	 * @brief Calculate variance of a group of data
+	 * @param data_src Data source
+	 * @return Variance of data source 
+	 */
+	double varianceCalc(std::vector<double>& data_src, double avr);
 
 private:	
 	double detect_ang_l_;
@@ -125,6 +136,8 @@ private:
 	size_t avoid_count_; // record number of avoiding
 
         double ship_width_; // width of ship
+
+	size_t check_num_; // number of points to check collision
 
 	boost::shared_mutex obs_buffer_rw_mutex_; // mutex for write and read of obstacle buffer
 	std::vector<std::pair<double, double>> obs_buffer_; // position buffer of obstacle
